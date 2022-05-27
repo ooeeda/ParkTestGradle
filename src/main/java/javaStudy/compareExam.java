@@ -17,6 +17,8 @@ public class compareExam {
             return i-j;
         });
 
-
+        exec((i,j) -> {
+            return i+j;
+        });
     }
 }

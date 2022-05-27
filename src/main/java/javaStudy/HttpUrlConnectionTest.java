@@ -1,5 +1,9 @@
 package javaStudy;
 
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -11,7 +15,9 @@ import java.nio.charset.Charset;
 public class HttpUrlConnectionTest {
     public static void main(String[] args){
         HttpUrlConnectionTest httpTest = new HttpUrlConnectionTest();
-        httpTest.HttpsURLConnectionPost("https://jsonplaceholder.typicode.com/posts/1/comments");
+        httpTest.HttpsURLConnectionPost("https://fakestoreapi.com/products/1");
+        //httpTest.HttpsURLConnectionPost("https://fakestoreapi.com/products");
+
     }
     public void HttpURLConnectionGet(String strURL, String strParams) {
         try {
@@ -157,8 +163,9 @@ public class HttpUrlConnectionTest {
         try {
             URL url = new URL(strURL);
             HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+            JSONObject responseJson = null;
 
-            conn.setRequestMethod("POST");
+            conn.setRequestMethod("GET");
             //conn.setRequestProperty("Authorization", alpha);
             conn.setRequestProperty("User-Agent", "Mozilla/5.0");
             conn.setRequestProperty("Accept-Language", "ko-kr");
@@ -171,27 +178,21 @@ public class HttpUrlConnectionTest {
 
             conn.setDoOutput(true); //항상 갱신된 내용 가져오도록 true로 설정
 
-            //OutputStream outputStream = null;
+            JSONObject json = new JSONObject();
 
-/*            outputStream = conn.getOutputStream();
-            outputStream.write(1);
-            outputStream.flush();*/
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuffer stringBuffer = new StringBuffer();
-            String inputLine;
-
-            while ((inputLine = bufferedReader.readLine()) != null)  {
-                stringBuffer.append(inputLine);
-                System.out.println(inputLine);
+           int responseCode = conn.getResponseCode();
+            if (responseCode == 400 || responseCode == 401 || responseCode == 500 ) {
+                System.out.println(responseCode + " Error!");
+            } else {
+                BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line = "";
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                }
+                responseJson = new JSONObject(sb.toString());
+                System.out.println(responseJson);
             }
-            bufferedReader.close();
-
-            String response = stringBuffer.toString();
-            //
-            //
-            // BufferedReader bufferedReader = new BufferedReader(outputStream);
-
 
         } catch (MalformedURLException e) {
             //URL
